@@ -76,7 +76,9 @@ class Submission(models.Model):
 
 
     class Meta:
-        unique_together = ['studenrt', 'exam']
+        constraints = [
+        models.UniqueConstraint(fields=['student', 'exam'], name='unique_exam_per_course')
+    ]
         ordering = ['-submitted_at']
         indexes = [
             models.Index(fields=['student', 'status']),
@@ -97,8 +99,9 @@ class Answer(models.Model):
      
 
     class Meta:
-        unique_together = ['submission', 'question']
-
+        constraints = [
+        models.UniqueConstraint(fields=['submission', 'question'], name='unique_exam_per_course')
+    ]
         indexes = [
             models.Index(fields=['submission', 'question'])
         ]
