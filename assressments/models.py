@@ -55,3 +55,53 @@ class Question(models.Model):
     
     def __str__(self):
         return f"{self.exam.title} - Q{self.order}"
+    
+
+class Submission(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending Grading'),
+        ('GRADED', 'Graded'),
+        ('FAILED', 'Grading Failed'),
+    ]
+
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='submissions')
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='submissions')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
+    score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True )
+    feedback = models.TextField(blank=True)
+
+    started_at = models.DateTimeField(auto_now_add=True)
+    submitted_at = models.DateTimeField(null=True, blank=True)
+    graded_at = models.DateTimeField(null=True, blank=True)
+
+
+    class Meta:
+        unique_together = ['studenrt', 'exam']
+        ordering = ['-submitted_at']
+        indexes = [
+            models.Index(fields=['student', 'status']),
+            models.Index(fields=['exam', 'status']),
+        ]
+
+    def __str__(self):
+        return f"{self.student.username} - {self.exam.title}"
+    
+
+class Answer(models.Model):
+    submission = models.ForeignKey(Submission, on_delete=models.CASCADE, related_name='answers')
+    Question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    answer_text = models.TextField()
+    score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    feedback = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+     
+
+    class Meta:
+        unique_together = ['submission', 'question']
+
+        indexes = [
+            models.Index(fields=['submission', 'question'])
+        ]
+
+    def __str__(self):
+        return f'{self.submission} - Q{self.question.order}'
