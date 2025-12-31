@@ -1,0 +1,57 @@
+from django.db import models
+from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+
+class Exam(models.Model):
+    title = models.CharField(max_lengrth=200)
+    course = models.CharField(max_length=100)
+    duration =models.IntegerField(help_text="Duration in minutes")
+    description = models.TextField(blank=True)
+    total_marks = models.DecimalField(max_digits=5, decimal_places=2, default=100)
+    passing_marks = models.DecimalField(max_digits=5, decimal_places=2, default=40)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['course', 'is_active']),
+        ]
+
+        def __str__(self):
+            return f"{self.title} - {self.course}"
+
+
+class Question(models.Model):
+    QUESTION_TYPES = [
+        ('MCQ', 'Multiple Choice Question'),
+        ('SHORT', 'Short Answer'),
+        ('ESSAY', 'Essay')
+    ]
+
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='questions')
+    question_text = models.TextField()
+    question_type = models.CharField(max_length=10, choices=QUESTION_TYPES)
+    marks = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0)])
+    order = models.IntegerField(default=0)
+
+    option_a = models.CharField(max_length=500, blank=True)
+    option_b = models.CharField(max_length=500, blank=True)
+    option_c = models.CharField(max_length=500, blank=True)
+    option_d = models.CharField(max_length=500, blank=True)
+    correct_option = models.CharField(max_length=1, blank=True)
+
+
+    expected_keywords = models.TextField(default=List, bank=True)
+    models_answer = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['exam', 'order']
+        indexes = [
+            models.Index(fields=['exam', 'order']),
+        ]
+    
+    def __str__(self):
+        return f"{self.exam.title} - Q{self.order}"
