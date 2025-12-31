@@ -34,7 +34,7 @@ class AnswerSubmissionSerializer(serializers.Serializer):
     question_id = serializers.IntegerField()
     answer_text = serializers.CharField()
 
-class SubmissionCreationSerializer(serializers.Serializer):
+class SubmissionCreateSerializer(serializers.Serializer):
     exam_id = serializers.IntegerField()
     answers = AnswerSubmissionSerializer(many=True)
 
