@@ -85,3 +85,46 @@ class GradingService:
         )
         
         return round(final_score, 2), feedback
+
+        @staticmethod
+        def _calculate_keyword_score(text, keywords):
+
+            if not keywords:
+                return 0.5
+            
+            text = text.lower()
+            found_keywords = sum(1 for keyword in keywords if keyword.lower() in text)
+            return found_keywords / len(keywords) if keywords else 0
+        
+
+        @staticmethod
+        def _calculate_similarity(text1, text2):
+            try:
+                vectorizer = TfidfVectorizer()
+                tfdif_matrix = vectorizer.fit_transform([text1, text2])
+                similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
+                return similarity
+            except:
+                return 0.0
+            
+        @staticmethod
+        def _generate_feedback(score, max_score, keyword_score, similarity_score):
+
+            percentage = (score/max_score)*100 if max_score > 0 else 0
+
+
+            if percentage >= 80:
+                quality = "Excellent"
+
+            elif percentage >= 60:
+                quality = "Good"
+            elif percentage >= 40:
+                quality = "Fair"
+            else:
+                quality = "Needs improvement"
+
+            feedback = f"{quality} answer. "
+            feedback += f"keyword coverage: {keyword_score*100:.0f}%. "
+            feedback += f"content similarity: {similarity_score*100:.0f}%."
+
+            return feedback

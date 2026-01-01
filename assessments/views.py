@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
-from django.db import timezone
+# from django.db import timezone
 from .models import Exam, Question, Submission, Answer
 from .serializers import (ExamListSerializer, ExamDetailSerializer,
                           SubmissionCreateSerializer, AnswerDetailSerializer
@@ -27,7 +27,7 @@ class ExamViewSet(viewsets.ReadOnlyModelViewSet):
         return ExamDetailSerializer
 
 
-class SubmissionViewSet(view.ModelViewSet):
+class SubmissionViewSet(viewsets.ModelViewSet):
 
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     serializer_class = AnswerDetailSerializer

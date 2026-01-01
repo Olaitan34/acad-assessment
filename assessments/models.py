@@ -4,7 +4,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Exam(models.Model):
-    title = models.CharField(max_lengrth=200)
+    title = models.CharField(max_length=200)
     course = models.CharField(max_length=100)
     duration =models.IntegerField(help_text="Duration in minutes")
     description = models.TextField(blank=True)
@@ -44,7 +44,7 @@ class Question(models.Model):
     correct_option = models.CharField(max_length=1, blank=True)
 
 
-    expected_keywords = models.TextField(default=List, bank=True)
+    expected_keywords = models.TextField(default=list, blank=True)
     models_answer = models.TextField(blank=True)
 
     class Meta:
@@ -77,8 +77,8 @@ class Submission(models.Model):
 
     class Meta:
         constraints = [
-        models.UniqueConstraint(fields=['student', 'exam'], name='unique_exam_per_course')
-    ]
+            models.UniqueConstraint(fields=['student', 'exam'], name='unique_student_exam')
+        ]
         ordering = ['-submitted_at']
         indexes = [
             models.Index(fields=['student', 'status']),
@@ -91,7 +91,7 @@ class Submission(models.Model):
 
 class Answer(models.Model):
     submission = models.ForeignKey(Submission, on_delete=models.CASCADE, related_name='answers')
-    Question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer_text = models.TextField()
     score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     feedback = models.TextField(blank=True)
@@ -100,8 +100,8 @@ class Answer(models.Model):
 
     class Meta:
         constraints = [
-        models.UniqueConstraint(fields=['submission', 'question'], name='unique_exam_per_course')
-    ]
+            models.UniqueConstraint(fields=['submission', 'question'], name='unique_submission_question')
+        ]
         indexes = [
             models.Index(fields=['submission', 'question'])
         ]
