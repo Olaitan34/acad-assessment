@@ -1,5 +1,6 @@
 from urllib import request
 from django.shortcuts import render
+from django.db import transaction
 from rest_framework import viewsets, status
 from rest_framework import generics, permissions
 from rest_framework.decorators import action
@@ -17,7 +18,7 @@ from .grading import GradingService
 
 
 class ExamViewSet(viewsets.ReadOnlyModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     queryset = Exam.objects.filter(is_active=True).prefetch_related('questions')
 
 
@@ -33,7 +34,10 @@ class SubmissionViewSet(viewsets.ModelViewSet):
     serializer_class = AnswerDetailSerializer
 
     def get_queryset(self):
-
+        # Handle swagger schema generation with anonymous user
+        if getattr(self, 'swagger_fake_view', False):
+            return Submission.objects.none()
+        
         if self.request.user.is_staff:
             return Submission.objects.all().select_related('exam', 'student').prefetch_related('answers__question')
         return Submission.objects.filter(student=self.request.user).select_related('exam').prefetch_related('answers__question')

@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 
 
@@ -28,6 +30,23 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
     serializer_class = LoginSerializer
 
+    @swagger_auto_schema(
+        operation_description="Login to get authentication token",
+        request_body=LoginSerializer,
+        responses={
+            200: openapi.Response(
+                description="Login successful",
+                examples={
+                    "application/json": {
+                        "user": {"id": 1, "username": "john", "email": "john@example.com"},
+                        "token": "9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b",
+                        "message": "Login successful"
+                    }
+                }
+            ),
+            401: "Invalid credentials"
+        }
+    )
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
