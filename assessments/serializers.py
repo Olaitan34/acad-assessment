@@ -68,7 +68,12 @@ class AnswerDetailSerializer(serializers.ModelSerializer):
         fields = ['id', 'question_text', 'question_marks', 'answer_text', 'score', 'feedback']
 
 
-        class Meta:
-            model = Submission
-            fields = ['id', 'exam_title', 'student_name', 'status', 'score',
-                      'feedback', 'started_at', 'graded_at', 'answers']
+class SubmissionDetailSerializer(serializers.ModelSerializer):
+    exam_title = serializers.CharField(source='exam.title', read_only=True)
+    student_name = serializers.CharField(source='student.username', read_only=True)
+    answers = AnswerDetailSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Submission
+        fields = ['id', 'exam_title', 'student_name', 'status', 'score',
+                  'feedback', 'started_at', 'graded_at', 'answers']

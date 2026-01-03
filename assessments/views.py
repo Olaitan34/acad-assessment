@@ -10,7 +10,8 @@ from django.utils import timezone
 # from django.db import timezone
 from .models import Exam, Question, Submission, Answer
 from .serializers import (ExamListSerializer, ExamDetailSerializer,
-                          SubmissionCreateSerializer, AnswerDetailSerializer
+                          SubmissionCreateSerializer, SubmissionDetailSerializer,
+                          AnswerDetailSerializer
                           )
 from .permissions import IsOwnerOrReadOnly
 from .grading import GradingService
@@ -31,7 +32,7 @@ class ExamViewSet(viewsets.ReadOnlyModelViewSet):
 class SubmissionViewSet(viewsets.ModelViewSet):
 
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
-    serializer_class = AnswerDetailSerializer
+    serializer_class = SubmissionDetailSerializer
 
     def get_queryset(self):
         # Handle swagger schema generation with anonymous user
@@ -86,5 +87,5 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             submission.save()
 
         submission.refresh_from_db()
-        result_serializer = AnswerDetailSerializer(submission)
+        result_serializer = SubmissionDetailSerializer(submission)
         return Response(result_serializer.data, status=status.HTTP_201_CREATED)

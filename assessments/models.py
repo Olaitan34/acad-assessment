@@ -43,8 +43,7 @@ class Question(models.Model):
     option_d = models.CharField(max_length=500, blank=True)
     correct_option = models.CharField(max_length=1, blank=True)
 
-
-    expected_keywords = models.TextField(default=list, blank=True)
+    expected_keywords = models.TextField(default='', blank=True)
     models_answer = models.TextField(blank=True)
 
     class Meta:

@@ -7,7 +7,7 @@ import re
 
 class GradingService:
     @staticmethod
-    def grade_sumbission(submission_id):
+    def grade_submission(submission_id):
         try:
             submission = Submission.objects.select_related('exam').prefetch_related(
                 'answers__question'
@@ -22,7 +22,7 @@ class GradingService:
                 if question.question_type == 'MCQ':
                     score, feedback = GradingService._grade_mcq(answer, question)
                 elif question.question_type in ['SHORT', 'ESSAY']:
-                    score, feedback = GradingService._grade_descrptive(answer, question)
+                    score, feedback = GradingService._grade_descriptive(answer, question)
                 else:
                     score, feedback = 0, 'Unknown question type.'
 
@@ -50,21 +50,21 @@ class GradingService:
     def _grade_mcq(answer, question):
 
         student_answer = answer.answer_text.strip().upper()
-        correct_answer = question.correct_answer.strip().upper()
+        correct_answer = question.correct_option.strip().upper()
 
         if student_answer == correct_answer:
-            return float(question.marks), 'correct answer!'
+            return float(question.marks), 'Correct answer!'
         else:
             return 0.0, f'Incorrect. Correct answer is {correct_answer}'
         
     @staticmethod
-    def _grade_descrptive(answer, question):
+    def _grade_descriptive(answer, question):
 
-        if not question.model_answer or not answer.answer_text:
+        if not question.models_answer or not answer.answer_text:
             return 0.0, 'No answer provided'
         
         student_answer = answer.answer_text.lower().strip()
-        model_answer = question.model_answer.lower().strip()
+        model_answer = question.models_answer.lower().strip()
 
 
         keyword_score = GradingService._calculate_keyword_score(
@@ -86,45 +86,52 @@ class GradingService:
         
         return round(final_score, 2), feedback
 
-        @staticmethod
-        def _calculate_keyword_score(text, keywords):
+    @staticmethod
+    def _calculate_keyword_score(text, keywords):
 
-            if not keywords:
-                return 0.5
-            
-            text = text.lower()
-            found_keywords = sum(1 for keyword in keywords if keyword.lower() in text)
-            return found_keywords / len(keywords) if keywords else 0
+        if not keywords:
+            return 0.5
+        
+        # Convert string to list if needed
+        if isinstance(keywords, str):
+            keywords = [k.strip() for k in keywords.split(',') if k.strip()]
+        
+        if not keywords:
+            return 0.5
+        
+        text = text.lower()
+        found_keywords = sum(1 for keyword in keywords if keyword.lower() in text)
+        return found_keywords / len(keywords) if keywords else 0
         
 
-        @staticmethod
-        def _calculate_similarity(text1, text2):
-            try:
-                vectorizer = TfidfVectorizer()
-                tfdif_matrix = vectorizer.fit_transform([text1, text2])
-                similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
-                return similarity
-            except:
-                return 0.0
+    @staticmethod
+    def _calculate_similarity(text1, text2):
+        try:
+            vectorizer = TfidfVectorizer()
+            tfidf_matrix = vectorizer.fit_transform([text1, text2])
+            similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
+            return similarity
+        except:
+            return 0.0
             
-        @staticmethod
-        def _generate_feedback(score, max_score, keyword_score, similarity_score):
+    @staticmethod
+    def _generate_feedback(score, max_score, keyword_score, similarity_score):
 
-            percentage = (score/max_score)*100 if max_score > 0 else 0
+        percentage = (score/max_score)*100 if max_score > 0 else 0
 
 
-            if percentage >= 80:
-                quality = "Excellent"
+        if percentage >= 80:
+            quality = "Excellent"
 
-            elif percentage >= 60:
-                quality = "Good"
-            elif percentage >= 40:
-                quality = "Fair"
-            else:
-                quality = "Needs improvement"
+        elif percentage >= 60:
+            quality = "Good"
+        elif percentage >= 40:
+            quality = "Fair"
+        else:
+            quality = "Needs improvement"
 
-            feedback = f"{quality} answer. "
-            feedback += f"keyword coverage: {keyword_score*100:.0f}%. "
-            feedback += f"content similarity: {similarity_score*100:.0f}%."
+        feedback = f"{quality} answer. "
+        feedback += f"Keyword coverage: {keyword_score*100:.0f}%. "
+        feedback += f"Content similarity: {similarity_score*100:.0f}%."
 
-            return feedback
+        return feedback
