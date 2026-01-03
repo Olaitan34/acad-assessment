@@ -361,6 +361,55 @@ Content-Type: application/json
 }
 ```
 
+**Example Payload for Web Development Exam (ID: 3):**
+```json
+{
+  "exam_id": 3,
+  "answers": [
+    {
+      "question_id": 21,
+      "answer_text": "B"
+    },
+    {
+      "question_id": 22,
+      "answer_text": "The CSS box model describes how elements are structured on a web page. It consists of four parts: content (the actual content), padding (space between content and border), border (surrounds the padding), and margin (space outside the border). The total element size includes all these components."
+    },
+    {
+      "question_id": 23,
+      "answer_text": "JavaScript adds interactivity and dynamic behavior to web pages. It runs in the browser and allows manipulation of HTML and CSS, handles user events like clicks and form submissions, makes API calls to servers, and creates interactive features without requiring page reloads."
+    },
+    {
+      "question_id": 24,
+      "answer_text": "A"
+    },
+    {
+      "question_id": 25,
+      "answer_text": "Inline CSS uses the style attribute directly within HTML elements for quick styling. Internal CSS is defined in the style tag within the head section of an HTML document. External CSS is defined in a separate .css file and linked using the link tag. External CSS is preferred for larger projects because it promotes code reusability, easier maintenance, and separation of concerns."
+    },
+    {
+      "question_id": 26,
+      "answer_text": "A"
+    },
+    {
+      "question_id": 27,
+      "answer_text": "Responsive web design ensures websites adapt seamlessly to different screen sizes and devices. It uses flexible grid layouts that adjust proportionally, media queries to apply device-specific CSS rules, fluid images that scale appropriately, and flexible typography. This approach provides optimal viewing experience across mobile phones, tablets, and desktops, improving usability and user satisfaction."
+    },
+    {
+      "question_id": 28,
+      "answer_text": "A"
+    },
+    {
+      "question_id": 29,
+      "answer_text": "var has function scope, is hoisted, and can be redeclared, leading to potential bugs. let has block scope, cannot be redeclared in the same scope, and provides better control over variable lifetime. const also has block scope but creates read-only references that cannot be reassigned after initialization, though object properties can still be modified. Modern JavaScript best practice is to use const by default, let when reassignment is needed, and avoid var entirely."
+    },
+    {
+      "question_id": 30,
+      "answer_text": "Semantic HTML uses meaningful tags that clearly describe their content purpose rather than generic div and span elements. Examples include header for page headers, nav for navigation menus, main for primary content, article for independent content pieces, section for thematic grouping, aside for sidebars, footer for page footers, and figure for images with captions. Benefits include improved accessibility for screen readers helping visually impaired users navigate content, better SEO as search engines understand document structure, cleaner more maintainable code that's self-documenting, and enhanced browser compatibility and future-proofing."
+    }
+  ]
+}
+```
+
 **Request Rules:**
 1. You must answer ALL questions in the exam
 2. For MCQ questions, `answer_text` should be a single letter: A, B, C, or D
